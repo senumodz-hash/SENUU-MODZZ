@@ -1,10 +1,9 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { connectDB } from "@/lib/db";
-import User from "@/models/User";
+import { connectDB } from "../../../lib/db";
+import User from "../../../models/User";
 
-// NextAuth handler for App Router
 const handler = NextAuth({
   providers: [
     CredentialsProvider({
@@ -16,22 +15,17 @@ const handler = NextAuth({
       async authorize(credentials) {
         await connectDB();
 
-        // Find the user by email
         const user = await User.findOne({ email: credentials.email });
         if (!user) return null;
 
-        // Check password
         const isValid = await bcrypt.compare(credentials.password, user.password);
         if (!isValid) return null;
 
-        // Return user object
         return { id: user._id, name: user.name, email: user.email, role: user.role };
       },
     }),
   ],
-  session: {
-    strategy: "jwt",
-  },
+  session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
