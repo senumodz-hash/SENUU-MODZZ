@@ -10,11 +10,10 @@ const handler = NextAuth({
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" },
+        password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
         await connectDB();
-
         const user = await User.findOne({ email: credentials.email });
         if (!user) return null;
 
@@ -22,8 +21,8 @@ const handler = NextAuth({
         if (!isValid) return null;
 
         return { id: user._id, name: user.name, email: user.email, role: user.role };
-      },
-    }),
+      }
+    })
   ],
   session: { strategy: "jwt" },
   callbacks: {
@@ -38,9 +37,9 @@ const handler = NextAuth({
       session.user.id = token.id;
       session.user.role = token.role;
       return session;
-    },
+    }
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET
 });
 
 export { handler as GET, handler as POST };
