@@ -1,8 +1,7 @@
-import { connectDB } from "@/lib/db";
-import Order from "@/models/Order";
+import { connectDB } from "../../../lib/db";
+import Order from "../../../models/Order";
 import { NextResponse } from "next/server";
 
-// POST: create a new order
 export async function POST(req) {
   try {
     const { userEmail, plan } = await req.json();
@@ -17,7 +16,6 @@ export async function POST(req) {
   }
 }
 
-// GET: fetch all orders
 export async function GET() {
   try {
     await connectDB();
