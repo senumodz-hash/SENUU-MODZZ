@@ -1,16 +1,29 @@
 import { connectDB } from "@/lib/db";
 import Order from "@/models/Order";
+import { NextResponse } from "next/server";
 
+// POST: create a new order
 export async function POST(req) {
-  const { userEmail, plan } = await req.json();
-  await connectDB();
-  const panelKey = "SM-" + Math.random().toString(36).slice(2, 10);
-  await Order.create({ userEmail, plan, panelKey });
-  return Response.json({ panelKey });
+  try {
+    const { userEmail, plan } = await req.json();
+    await connectDB();
+
+    const panelKey = "SM-" + Math.random().toString(36).slice(2, 10);
+    const order = await Order.create({ userEmail, plan, panelKey });
+
+    return NextResponse.json({ panelKey: order.panelKey });
+  } catch (err) {
+    return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
+  }
 }
 
+// GET: fetch all orders
 export async function GET() {
-  await connectDB();
-  const orders = await Order.find();
-  return Response.json(orders);
+  try {
+    await connectDB();
+    const orders = await Order.find();
+    return NextResponse.json(orders);
+  } catch (err) {
+    return NextResponse.json({ error: "Failed to fetch orders" }, { status: 500 });
+  }
 }
